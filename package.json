@@ -1,0 +1,26 @@
+{
+  "name": "digital-post-ai",
+  "version": "1.0.0",
+  "description": "WhatsApp bot for managing newsletter posts",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "node --watch index.js"
+  },
+  "dependencies": {
+    "baileys": "^6.7.10",
+    "@whiskeysockets/baileys": "^6.7.10",
+    "node-cron": "^3.0.3",
+    "axios": "^1.7.7",
+    "pino": "^9.4.0",
+    "ws": "^8.18.0",
+    "form-data": "^4.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "keywords": ["whatsapp", "bot", "newsletter", "scheduler"],
+  "author": "Digital Crew 243",
+  "license": "MIT"
+}
