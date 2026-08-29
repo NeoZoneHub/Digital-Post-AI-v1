@@ -6,6 +6,19 @@
   <br/>
   <h3>🚀 Gestionnaire intelligent de chaînes WhatsApp</h3>
   <p><i>Planifiez et automatisez vos publications sur les chaînes WhatsApp</i></p>
+  <br/>
+  
+  [![WhatsApp](https://img.shields.io/badge/WhatsApp-25D366?style=for-the-badge&logo=whatsapp&logoColor=white)](https://wa.me/998771529519)
+  [![WhatsApp Group](https://img.shields.io/badge/WhatsApp_Group-25D366?style=for-the-badge&logo=whatsapp&logoColor=white)](https://chat.whatsapp.com/Kiz7Rx4ncndCaPStWmhhh5)
+  [![WhatsApp Channel](https://img.shields.io/badge/WhatsApp_Channel-25D366?style=for-the-badge&logo=whatsapp&logoColor=white)](https://whatsapp.com/channel/0029VbBT7FdLCoX1TDyQQb1B)
+  
+  [![Node.js](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)](https://nodejs.org/)
+  [![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)](https://developer.mozilla.org/)
+  [![License](https://img.shields.io/badge/License-MIT-1E90FF?style=for-the-badge)](LICENSE)
+  
+  [![Deploy on Railway](https://img.shields.io/badge/Deploy_on_Railway-0B0D0E?style=for-the-badge&logo=railway&logoColor=white)](https://railway.app/)
+  [![Deploy on Vercel](https://img.shields.io/badge/Deploy_on_Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white)](https://vercel.com/)
+  [![Deploy on Render](https://img.shields.io/badge/Deploy_on_Render-46E3B7?style=for-the-badge&logo=render&logoColor=white)](https://render.com/)
 </div>
 
 ---
@@ -244,17 +257,14 @@ node index.js
 📱 Numéro du développeur
 
 https://img.shields.io/badge/WhatsApp-25D366?style=for-the-badge&logo=whatsapp&logoColor=white
-+998 77 152 95 19
 
 💬 Groupe de support WhatsApp
 
 https://img.shields.io/badge/WhatsApp_Group-25D366?style=for-the-badge&logo=whatsapp&logoColor=white
-Join Digital Crew 243
 
 📢 Chaîne WhatsApp officielle
 
 https://img.shields.io/badge/WhatsApp_Channel-25D366?style=for-the-badge&logo=whatsapp&logoColor=white
-Digital Post AI Channel
 
 🐛 Signaler un bug
 
@@ -274,12 +284,9 @@ MIT © Digital Crew 243
 </div>
 
 
-Modifications :
+Les boutons sont maintenant :
 
-1. ✅ Image remplacée par https://files.catbox.moe/y47h3b.png
-2. ✅ Image agrandie à width="400"
-3. ✅ Boutons stylisés dans la section Support avec des badges GitHub-style
-4. ✅ Liens cliquables avec des boutons visibles et modernes
-5. ✅ Icônes WhatsApp pour chaque lien
+1. En haut : Badges WhatsApp avec logos (3 boutons : Contact, Groupe, Chaîne)
+2. En bas : Badges avec logos et texte complet
 
-Les boutons utilisent des badges img.shields.io pour un rendu professionnel et coloré, avec des liens directs cliquables.
+Tous les boutons utilisent le style for-the-badge pour un rendu plus grand et plus visible, avec le logo WhatsApp intégré.
