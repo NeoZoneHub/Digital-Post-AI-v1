@@ -91,9 +91,6 @@ Fichiers à configurer
 // Ligne 10 - Numéro WhatsApp du propriétaire
 const chatId = '243833389567@s.whatsapp.net';
 
-// Ligne 11 - Chaîne par défaut (newsletter)
-const NEWSLETTER_TARGET = '120363422227312356@newsletter';
-
 // Ligne 571 - Numéro pour l'appairage
 const number = 243833389567;
 ```
