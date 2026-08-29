@@ -1,4 +1,4 @@
-```markdown
+
 # 🤖 Digital Post AI
 
 <div align="center">
