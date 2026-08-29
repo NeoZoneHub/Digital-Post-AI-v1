@@ -2,7 +2,7 @@
 # 🤖 Digital Post AI
 
 <div align="center">
-  <img src="https://files.catbox.moe/vj82dq.jpg" alt="Digital Post AI" width="200"/>
+  <img src="https://files.catbox.moe/y47h3b.png" alt="Digital Post AI" width="400"/>
   <br/>
   <h3>🚀 Gestionnaire intelligent de chaînes WhatsApp</h3>
   <p><i>Planifiez et automatisez vos publications sur les chaînes WhatsApp</i></p>
@@ -243,14 +243,17 @@ node index.js
 
 📱 Numéro du développeur
 
+https://img.shields.io/badge/WhatsApp-25D366?style=for-the-badge&logo=whatsapp&logoColor=white
 +998 77 152 95 19
 
 💬 Groupe de support WhatsApp
 
+https://img.shields.io/badge/WhatsApp_Group-25D366?style=for-the-badge&logo=whatsapp&logoColor=white
 Join Digital Crew 243
 
 📢 Chaîne WhatsApp officielle
 
+https://img.shields.io/badge/WhatsApp_Channel-25D366?style=for-the-badge&logo=whatsapp&logoColor=white
 Digital Post AI Channel
 
 🐛 Signaler un bug
@@ -269,3 +272,14 @@ MIT © Digital Crew 243
   <p><b>💻 Digital Crew 243</b> - <i>"Always Forward"</i></p>
   <p>⭐ N'oubliez pas de laisser une étoile si ce projet vous a été utile !</p>
 </div>
+
+
+Modifications :
+
+1. ✅ Image remplacée par https://files.catbox.moe/y47h3b.png
+2. ✅ Image agrandie à width="400"
+3. ✅ Boutons stylisés dans la section Support avec des badges GitHub-style
+4. ✅ Liens cliquables avec des boutons visibles et modernes
+5. ✅ Icônes WhatsApp pour chaque lien
+
+Les boutons utilisent des badges img.shields.io pour un rendu professionnel et coloré, avec des liens directs cliquables.
