@@ -129,15 +129,18 @@ Géré automatiquement
 
 📱 Commandes disponibles
 
-Commande Description Utilisation
-.config Configurer un nouveau projet Guide étape par étape
-.post Créer une publication Avec ou sans média
-.list Voir tous les projets et posts Aperçu complet
-.delete Supprimer un projet ou un post Avec confirmation
-.ia on/off Activer/Désactiver l'IA Persistant après redémarrage
-.help Afficher l'aide .help ou .help <commande>
-.newsletter Obtenir le JID d'une chaîne À utiliser DANS la chaîne
-.restar Redémarrer le bot Envoie un message de confirmation
+
+| Commande | Description | Utilisation |
+|----------|-------------|-------------|
+| `.config` | Configurer un nouveau projet | Guide étape par étape |
+| `.post` | Créer une publication | Avec ou sans média |
+| `.list` | Voir tous les projets et posts | Aperçu complet |
+| `.delete` | Supprimer un projet ou un post | Avec confirmation |
+| `.ia on/off` | Activer/Désactiver l'IA | Persistant après redémarrage |
+| `.help` | Afficher l'aide | `.help` ou `.help <commande>` |
+| `.newsletter` | Obtenir le JID d'une chaîne | À utiliser DANS la chaîne |
+| `.restar` | Redémarrer le bot | Envoie un message de confirmation |
+| `.forcecheck` | Forcer la vérification des posts | Vérification manuelle |
 
 ---
 
