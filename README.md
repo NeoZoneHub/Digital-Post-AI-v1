@@ -252,29 +252,28 @@ node index.js
 
 ---
 
-🆘 Support
 
-📱 Numéro du développeur
+## 🆘 Support
 
-https://img.shields.io/badge/WhatsApp-25D366?style=for-the-badge&logo=whatsapp&logoColor=white
+### 📱 Numéro du développeur
+[![WhatsApp](https://img.shields.io/badge/WhatsApp-25D366?style=for-the-badge&logo=whatsapp&logoColor=white)](https://wa.me/998771529519)
 
-💬 Groupe de support WhatsApp
+### 💬 Groupe de support WhatsApp
+[![WhatsApp Group](https://img.shields.io/badge/WhatsApp_Group-25D366?style=for-the-badge&logo=whatsapp&logoColor=white)](https://chat.whatsapp.com/Kiz7Rx4ncndCaPStWmhhh5)
 
-https://img.shields.io/badge/WhatsApp_Group-25D366?style=for-the-badge&logo=whatsapp&logoColor=white
+### 📢 Chaîne WhatsApp officielle
+[![WhatsApp Channel](https://img.shields.io/badge/WhatsApp_Channel-25D366?style=for-the-badge&logo=whatsapp&logoColor=white)](https://whatsapp.com/channel/0029VbBT7FdLCoX1TDyQQb1B)
 
-📢 Chaîne WhatsApp officielle
-
-https://img.shields.io/badge/WhatsApp_Channel-25D366?style=for-the-badge&logo=whatsapp&logoColor=white
-
-🐛 Signaler un bug
-
-Ouvrez une issue sur le repository GitHub ou contactez via WhatsApp.
+### 🐛 Signaler un bug
+[![GitHub Issues](https://img.shields.io/badge/GitHub_Issues-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/ton-repo/digital-post-ai/issues)
+[![WhatsApp](https://img.shields.io/badge/WhatsApp-25D366?style=for-the-badge&logo=whatsapp&logoColor=white)](https://wa.me/998771529519)
 
 ---
 
-📄 Licence
+## 📄 Licence
 
-MIT © Digital Crew 243
+[![License](https://img.shields.io/badge/License-MIT-1E90FF?style=for-the-badge)](LICENSE)
+MIT © [Digital Crew 243](https://whatsapp.com/channel/0029VbBT7FdLCoX1TDyQQb1B)
 
 ---
 
@@ -282,11 +281,3 @@ MIT © Digital Crew 243
   <p><b>💻 Digital Crew 243</b> - <i>"Always Forward"</i></p>
   <p>⭐ N'oubliez pas de laisser une étoile si ce projet vous a été utile !</p>
 </div>
-
-
-Les boutons sont maintenant :
-
-1. En haut : Badges WhatsApp avec logos (3 boutons : Contact, Groupe, Chaîne)
-2. En bas : Badges avec logos et texte complet
-
-Tous les boutons utilisent le style for-the-badge pour un rendu plus grand et plus visible, avec le logo WhatsApp intégré.
