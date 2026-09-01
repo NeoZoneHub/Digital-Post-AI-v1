@@ -2,6 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import axios from 'axios';
+import { downloadMediaMessage } from '@whiskeysockets/baileys';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -40,23 +41,25 @@ function getMessageContent(message) {
     if (message.imageMessage) {
         return {
             type: 'image',
-            url: message.imageMessage.url,
+            message: message,
             caption: message.imageMessage.caption || '',
-            mimetype: message.imageMessage.mimetype || 'image/jpeg'
+            mimetype: message.imageMessage.mimetype || 'image/jpeg',
+            filename: 'image.jpg'
         };
     }
     if (message.videoMessage) {
         return {
             type: 'video',
-            url: message.videoMessage.url,
+            message: message,
             caption: message.videoMessage.caption || '',
-            mimetype: message.videoMessage.mimetype || 'video/mp4'
+            mimetype: message.videoMessage.mimetype || 'video/mp4',
+            filename: 'video.mp4'
         };
     }
     if (message.documentMessage) {
         return {
             type: 'document',
-            url: message.documentMessage.url,
+            message: message,
             caption: message.documentMessage.caption || '',
             mimetype: message.documentMessage.mimetype || 'application/pdf',
             filename: message.documentMessage.fileName || 'document'
@@ -65,25 +68,26 @@ function getMessageContent(message) {
     return { text: '' };
 }
 
-async function downloadMedia(url, filePath) {
-    const response = await axios({
-        method: 'get',
-        url: url,
-        responseType: 'stream'
-    });
-    const writer = fs.createWriteStream(filePath);
-    response.data.pipe(writer);
-    return new Promise((resolve, reject) => {
-        writer.on('finish', resolve);
-        writer.on('error', reject);
-    });
+async function downloadMediaToFile(sock, message, filePath) {
+    try {
+        const buffer = await downloadMediaMessage(
+            message,
+            'buffer',
+            { logger: console }
+        );
+        fs.writeFileSync(filePath, buffer);
+        return filePath;
+    } catch (error) {
+        console.error('Error downloading media:', error);
+        throw error;
+    }
 }
 
 async function sendPost(sock, newsletter, content, mediaData = null) {
     if (mediaData) {
-        const filePath = path.join(tempDir, `${Date.now()}_${mediaData.type}_${path.basename(mediaData.url || 'file')}`);
+        const filePath = path.join(tempDir, `${Date.now()}_${mediaData.type}_${mediaData.filename || 'file'}`);
         try {
-            await downloadMedia(mediaData.url, filePath);
+            await downloadMediaToFile(sock, mediaData.message, filePath);
             
             if (mediaData.type === 'image') {
                 await sock.sendMessage(newsletter, {
@@ -286,7 +290,26 @@ export default async function(sock, from, args, sender, isGroup, isNewsletter, m
 
         if (state.step === 'waiting_datetime') {
             const datetime = args.join(' ');
-            const scheduledTime = new Date(datetime);
+            
+            const [datePart, timePart] = datetime.split(' ');
+            if (!datePart || !timePart) {
+                await sock.sendMessage(from, { 
+                    text: '❌ Format invalide. Utilisez: YYYY-MM-DD HH:MM\nExemple: 2026-08-10 15:30' 
+                });
+                return;
+            }
+            
+            const [year, month, day] = datePart.split('-').map(Number);
+            const [hours, minutes] = timePart.split(':').map(Number);
+            
+            if (isNaN(year) || isNaN(month) || isNaN(day) || isNaN(hours) || isNaN(minutes)) {
+                await sock.sendMessage(from, { 
+                    text: '❌ Format invalide. Utilisez: YYYY-MM-DD HH:MM\nExemple: 2026-08-10 15:30' 
+                });
+                return;
+            }
+            
+            const scheduledTime = new Date(Date.UTC(year, month - 1, day, hours, minutes));
             
             if (isNaN(scheduledTime.getTime())) {
                 await sock.sendMessage(from, { 
