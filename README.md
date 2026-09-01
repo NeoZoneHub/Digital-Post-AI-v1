@@ -69,7 +69,7 @@ npm --version
 
 ```bash
 # 1. Cloner le repository
-git clone https://github.com/ton-repo/Digital-Post-AI-v1.git
+git clone https://github.com/NeoZoneHub/Digital-Post-AI-v1.git
 cd digital-post-ai
 
 # 2. Installer les dépendances
