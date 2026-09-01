@@ -1,4 +1,4 @@
-import { makeWASocket, useMultiFileAuthState, DisconnectReason, fetchLatestBaileysVersion } from 'baileys';
+import { makeWASocket, useMultiFileAuthState, DisconnectReason, fetchLatestBaileysVersion, downloadMediaMessage } from '@whiskeysockets/baileys';
 import readline from 'readline';
 import pino from 'pino';
 import fs from 'fs';
@@ -13,6 +13,7 @@ const __dirname = path.dirname(__filename);
 const data = 'sessionData';
 const projectsFile = path.join(__dirname, 'data', 'projects.json');
 const iaStateFile = path.join(__dirname, 'data', 'ia-state.json');
+const sentCacheFile = path.join(__dirname, 'data', 'sent_cache.json');
 const NEWSLETTER_TARGET = '120363422227312356@newsletter';
 const restartFlag = path.join(__dirname, 'restart.flag');
 const tempDir = path.join(__dirname, 'temp');
@@ -59,6 +60,27 @@ function saveIaState(state) {
     fs.writeFileSync(iaStateFile, JSON.stringify(state, null, 2));
 }
 
+function loadSentCache() {
+    try {
+        if (fs.existsSync(sentCacheFile)) {
+            const data = fs.readFileSync(sentCacheFile, 'utf8');
+            const parsed = JSON.parse(data);
+            return new Set(parsed);
+        }
+    } catch (error) {
+        console.error('Error loading sent cache:', error);
+    }
+    return new Set();
+}
+
+function saveSentCache(cache) {
+    try {
+        fs.writeFileSync(sentCacheFile, JSON.stringify(Array.from(cache)), null, 2);
+    } catch (error) {
+        console.error('Error saving sent cache:', error);
+    }
+}
+
 async function getUserNumber() {
     return new Promise((resolve) => {
         const rl = readline.createInterface({
@@ -90,7 +112,7 @@ async function handleAIResponse(query) {
     isProcessingAI = true;
     
     try {
-        const url = 'https://digital-post-api.vercel.app/api/webpilot';
+        const url = 'https://digital-post-api.vercel.app/api/azyrion';
         const response = await axios.get(url, {
             params: { question: query }
         });
@@ -105,25 +127,26 @@ async function handleAIResponse(query) {
     }
 }
 
-async function downloadMedia(url, filePath) {
-    const response = await axios({
-        method: 'get',
-        url: url,
-        responseType: 'stream'
-    });
-    const writer = fs.createWriteStream(filePath);
-    response.data.pipe(writer);
-    return new Promise((resolve, reject) => {
-        writer.on('finish', resolve);
-        writer.on('error', reject);
-    });
+async function downloadMediaToFile(sock, message, filePath) {
+    try {
+        const buffer = await downloadMediaMessage(
+            message,
+            'buffer',
+            { logger: console }
+        );
+        fs.writeFileSync(filePath, buffer);
+        return filePath;
+    } catch (error) {
+        console.error('Error downloading media:', error);
+        throw error;
+    }
 }
 
-async function sendPost(sock, newsletter, content, mediaData = null) {
+export async function sendPost(sock, newsletter, content, mediaData = null) {
     if (mediaData) {
-        const filePath = path.join(tempDir, `${Date.now()}_${mediaData.type}_${path.basename(mediaData.url || 'file')}`);
+        const filePath = path.join(tempDir, `${Date.now()}_${mediaData.type}_${mediaData.filename || 'file'}`);
         try {
-            await downloadMedia(mediaData.url, filePath);
+            await downloadMediaToFile(sock, mediaData.message, filePath);
             
             if (mediaData.type === 'image') {
                 await sock.sendMessage(newsletter, {
@@ -156,10 +179,11 @@ async function sendPost(sock, newsletter, content, mediaData = null) {
     }
 }
 
-let scheduledPostsCache = new Set();
+let scheduledPostsCache = loadSentCache();
 let isChecking = false;
+let lastCheckTime = 0;
 
-async function checkScheduledPosts(sock) {
+export async function checkScheduledPosts(sock) {
     if (isChecking) return;
     isChecking = true;
     
@@ -167,36 +191,59 @@ async function checkScheduledPosts(sock) {
         const data = loadProjects();
         const now = new Date();
         let modified = false;
+        let postsSent = 0;
+
+        console.log(`🔍 Checking ${data.projects.length} projects at ${now.toISOString()}`);
 
         for (const project of data.projects) {
+            const pendingPosts = project.posts.filter(p => p.status === 'pending');
+            if (pendingPosts.length > 0) {
+                console.log(`📋 Project "${project.name}" has ${pendingPosts.length} pending posts`);
+                for (const p of pendingPosts) {
+                    const scheduledTime = new Date(p.scheduledAt);
+                    console.log(`   📝 Post "${p.content.substring(0, 20)}..." scheduled for ${scheduledTime.toISOString()}`);
+                }
+            }
+            
             for (const post of project.posts) {
                 if (post.status === 'pending' && post.scheduledAt) {
                     const scheduledTime = new Date(post.scheduledAt);
                     const diffMs = scheduledTime - now;
                     const diffSec = diffMs / 1000;
                     
+                    console.log(`⏱️ Now (UTC): ${now.toISOString()}, Scheduled (UTC): ${scheduledTime.toISOString()}, Diff: ${diffSec.toFixed(0)}s`);
+                    
                     if (diffSec <= 0) {
                         const cacheKey = `${project.newsletter}_${post.id}`;
+                        
                         if (scheduledPostsCache.has(cacheKey)) {
+                            console.log(`⏭️ Skipping already sent post: ${cacheKey}`);
                             continue;
                         }
-                        scheduledPostsCache.add(cacheKey);
+                        
+                        console.log(`⏰ Sending scheduled post: ${post.content.substring(0, 30)}...`);
                         
                         try {
-                            console.log(`⏰ Sending scheduled post: ${post.content.substring(0, 30)}...`);
                             if (post.media) {
                                 await sendPost(sock, project.newsletter, post.content, post.media);
                             } else {
                                 await sock.sendMessage(project.newsletter, { text: post.content });
                             }
+                            
                             post.status = 'sent';
                             post.sentAt = now.toISOString();
                             modified = true;
+                            postsSent++;
+                            
+                            scheduledPostsCache.add(cacheKey);
+                            saveSentCache(scheduledPostsCache);
+                            
                             console.log(`✅ Post sent to ${project.newsletter}: ${post.content.substring(0, 30)}...`);
                         } catch (error) {
                             console.error('❌ Failed to send scheduled post:', error);
-                            scheduledPostsCache.delete(cacheKey);
                         }
+                    } else if (diffSec < 120) {
+                        console.log(`⏱️ Post scheduled at ${scheduledTime.toISOString()}, will be sent in ${diffSec.toFixed(0)}s`);
                     }
                 }
             }
@@ -204,16 +251,49 @@ async function checkScheduledPosts(sock) {
 
         if (modified) {
             saveProjects(data);
+            console.log(`💾 Saved ${postsSent} sent posts to projects.json`);
         }
 
-        if (scheduledPostsCache.size > 100) {
-            scheduledPostsCache.clear();
+        if (scheduledPostsCache.size > 1000) {
+            const entries = Array.from(scheduledPostsCache);
+            const recent = entries.slice(-500);
+            scheduledPostsCache = new Set(recent);
+            saveSentCache(scheduledPostsCache);
         }
+        
+        return { modified, postsSent };
     } catch (error) {
         console.error('Error checking scheduled posts:', error);
+        throw error;
     } finally {
         isChecking = false;
+        lastCheckTime = Date.now();
     }
+}
+
+export async function forceCheckScheduledPosts(sock) {
+    console.log('🔴 FORCE CHECK: Checking all pending posts...');
+    const data = loadProjects();
+    const now = new Date();
+    let found = false;
+    
+    for (const project of data.projects) {
+        const pendingPosts = project.posts.filter(p => p.status === 'pending');
+        if (pendingPosts.length > 0) {
+            found = true;
+            console.log(`📋 Found ${pendingPosts.length} pending posts in project "${project.name}"`);
+            for (const p of pendingPosts) {
+                const scheduledTime = new Date(p.scheduledAt);
+                console.log(`   📝 "${p.content.substring(0, 30)}..." scheduled for ${scheduledTime.toISOString()}`);
+            }
+        }
+    }
+    
+    if (!found) {
+        console.log('📭 No pending posts found');
+    }
+    
+    await checkScheduledPosts(sock);
 }
 
 async function handleMessage(sock, msg) {
@@ -242,8 +322,10 @@ async function handleMessage(sock, msg) {
 
         const iaState = loadIaState();
         if (iaState.enabled && body.startsWith('Azyrion')) {
+            await sock.sendPresenceUpdate('composing', from);
             const aiResponse = await handleAIResponse(body.replace('Azyrion', '').trim());
             if (aiResponse) {
+                await sock.sendPresenceUpdate('paused', from);
                 await sock.sendMessage(from, { text: aiResponse });
                 return;
             }
@@ -340,6 +422,7 @@ async function connectToWhatsapp() {
 > Gestionnaire intelligent de chaînes WhatsApp
 > Planification automatique de publications
 > Assistant IA intégré (Azyrion)
+> Jusqu'à 5 publications par projet
 ╠═════════════════════════╣
 📌 *Commandes principales:*
   .config  → Configurer une chaîne
@@ -350,7 +433,8 @@ async function connectToWhatsapp() {
   .ia off  → Désactiver l'IA
   .help    → Aide détaillée
   .newsletter → Obtenir le JID de la chaîne
-  .restart  → Redémarrer le bot
+  .restar  → Redémarrer le bot
+  .forcecheck → Forcer la vérification des posts
 ╚═════════════════════════╝
 
 💡 *Digital Crew 243* - "Always Forward"
@@ -388,11 +472,16 @@ async function connectToWhatsapp() {
 
             sock.ev.on('messages.upsert', async (msg) => handleMessage(sock, msg));
 
-            cron.schedule('* * * * *', async () => {
-                console.log(`⏰ Checking scheduled posts at ${new Date().toLocaleString()}`);
+            setTimeout(async () => {
+                console.log('🔍 Initial check for scheduled posts...');
+                await forceCheckScheduledPosts(sock);
+            }, 3000);
+
+            setInterval(async () => {
+                console.log(`⏰ Checking scheduled posts at ${new Date().toISOString()}`);
                 await checkScheduledPosts(sock);
-            });
-            console.log('⏰ Scheduler started (checking every minute)');
+            }, 30000);
+            console.log('⏰ Scheduler started (checking every 30 seconds)');
         }
     });
 
